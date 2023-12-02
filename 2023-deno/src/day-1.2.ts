@@ -4,7 +4,9 @@ export const solution: Solution = async ({ loadInput, debug, answer }) => {
   const input = await loadInput();
   const encoded = input.split("\n").filter((x) => x);
 
-  debug(`Total encoded calibrations (numbers and number words): ${encoded.length}`);
+  debug(
+    `Total encoded calibrations (numbers and number words): ${encoded.length}`,
+  );
 
   function reverse(str: string) {
     return str.split("").reverse().join("");
@@ -46,7 +48,9 @@ export const solution: Solution = async ({ loadInput, debug, answer }) => {
         secondRegex,
       )!;
       if (lastDigit.length > 1) {
-        lastDigit = digitalWordMapReversed[lastDigit as keyof typeof digitalWordMapReversed];
+        lastDigit = digitalWordMapReversed[
+          lastDigit as keyof typeof digitalWordMapReversed
+        ];
       }
       const decodedCalibration = parseInt(`${firstDigit}${lastDigit}`);
       return ctx + decodedCalibration;

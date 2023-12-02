@@ -51,32 +51,44 @@ export function setupLogger(debug?: boolean) {
   });
 
   const logger = log.getLogger();
-  if (level !== 'INFO') {
+  if (level !== "INFO") {
     logger.info(`Logger initialised with level ${level}`);
   }
 
   return logger;
 }
 
-export const BoxFormatter = {
-  top: (heading: string, nestedHeading: string) => {
+export class BoxFormatter {
+  private i = 0;
+
+  altPipe() {
+    return this.i++ % 3 === 0 ? "╣" : "│";
+  }
+
+  top(heading: string, nestedHeading: string) {
     const nestedHeadings = nestedHeading.split("\n").map((line, i, all) =>
-      (all.length > 1 && i < all.length - 1 ? `│ ├─ ` : `│ ╰─ `) + line
+      (all.length > 1 && i < all.length - 1 ? `${this.altPipe()} ├─• ` : `${this.altPipe()} ╰─• `) + line
     );
     return color.dim(`
 ${color.italic(`╭─┬─ ${heading} ───────────────────────╼`)}
 ${nestedHeadings.join("\n")}
-│`.trim());
-  },
-  body: (str: string) =>
-    str.split("\n").map((line) => `${color.dim("│")} ${line}`).join("\n"),
-  bottom: (heading: string, footer: string) =>
-    `
-${color.dim("│")}
-${color.dim(`│ ╭─ ${footer}`)}
+${this.altPipe()}`.trim());
+  }
+
+  body(str: string) {
+    return str.split("\n").map((line) =>
+      `${color.dim(this.altPipe())} ${line}`
+    ).join("\n");
+  }
+
+  bottom(heading: string, footer: string) {
+    return `
+${color.dim(this.altPipe())}
+${color.dim(`${this.altPipe()} ╭─• ${footer}`)}
 ${color.dim(`╰─┴──${"─".repeat(heading.length)}────────────────────────╼`)}`
-      .trim(),
-};
+      .trim();
+  }
+}
 
 export type SolutionActions = {
   loadInput: () => Promise<string>;

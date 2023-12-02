@@ -79,7 +79,10 @@ export async function main() {
         .description("Run all puzzles sequentially.")
         .env("DEBUG=<enable:boolean>", "Enable debug output.")
         .arguments("")
-        .option("-s,--spoilers", "Obscure the answer to avoid sharing spoilers.")
+        .option(
+          "-s,--spoilers",
+          "Obscure the answer to avoid sharing spoilers.",
+        )
         .action(
           async (options) => {
             const logger = setupLogger(options.debug);
@@ -87,16 +90,25 @@ export async function main() {
             logger.debug(`Actioning 'all' command.`);
 
             console.log(
-              `\nRunning all available puzzles${options.spoilers ? ' ' + color.italic(color.black(color.bgWhite(' in Spoiler-free Mode '))) : ''}:\n\n${
-                availablePuzzles.map((p) => ` → ${p}`).join("\n")
-              }\n`,
+              `\nRunning all available puzzles${
+                options.spoilers
+                  ? " " +
+                    color.italic(
+                      color.black(color.bgWhite(" in Spoiler-free Mode ")),
+                    )
+                  : ""
+              }:\n\n${availablePuzzles.map((p) => ` → ${p}`).join("\n")}\n`,
             );
 
             await availablePuzzles.reduce(
               async (previousPromise: Promise<void>, puzzle) => {
                 await previousPromise;
 
-                const promise = await runPuzzleSolution(logger, puzzle, options.spoilers);
+                const promise = await runPuzzleSolution(
+                  logger,
+                  puzzle,
+                  options.spoilers,
+                );
                 console.log("");
                 return promise;
               },
@@ -115,7 +127,13 @@ function isSolutionModule(
 ): mod is SolutionModule {
   return typeof mod === "object" && "solution" in mod && !!mod.solution;
 }
-async function runPuzzleSolution(logger: Logger, puzzle: string, noSpoilers: boolean = false) {
+async function runPuzzleSolution(
+  logger: Logger,
+  puzzle: string,
+  noSpoilers: boolean = false,
+) {
+  const Box = new BoxFormatter();
+
   try {
     const puzzleName = `Day:  ${puzzle.split(".")[0]}\nPart: ${
       puzzle.split(".")[1]
@@ -133,7 +151,10 @@ async function runPuzzleSolution(logger: Logger, puzzle: string, noSpoilers: boo
     const startTime = new Date();
 
     const boxHeading = "RUNNING";
-    console.log(BoxFormatter.top(boxHeading, puzzleName + "\n" + puzzleFile));
+    console.log(Box.top(boxHeading, `
+Day:  ${(puzzle.split(".")[0])}
+Part: ${puzzle.split(".")[1]}
+${puzzleFile}`.trim()));
     let answer: string | number = "NO-ANSWER";
     await mod.solution({
       debug: (str) => {
@@ -141,7 +162,7 @@ async function runPuzzleSolution(logger: Logger, puzzle: string, noSpoilers: boo
           ignoreZero: true,
           style: "narrow",
         });
-        console.log(BoxFormatter.body(`${
+        console.log(Box.body(`${
           color.dim(
             `[DEBUG]`,
           )
@@ -164,9 +185,13 @@ async function runPuzzleSolution(logger: Logger, puzzle: string, noSpoilers: boo
     });
 
     console.log(
-      BoxFormatter.bottom(
+      Box.bottom(
         boxHeading,
-        `ANSWER → ${color.reset(color.black(color.bgWhite(` ${noSpoilers ? '*****' : answer} `)))}`,
+        `ANSWER ▶︎ ${
+          color.reset(
+            color.black(color.bgWhite(` ${noSpoilers ? "*****" : answer} `)),
+          )
+        }`,
       ),
     );
 
