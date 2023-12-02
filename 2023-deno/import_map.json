@@ -1,0 +1,11 @@
+{
+  "imports": {
+    "/": "./",
+    "./": "./",
+    "std/datetime/": "https://deno.land/std@0.208.0/datetime/",
+    "std/fmt/": "https://deno.land/std@0.208.0/fmt/",
+    "std/log/": "https://deno.land/std@0.208.0/log/",
+    "std/streams/": "https://deno.land/std@0.208.0/streams/",
+    "x/cliffy/": "https://deno.land/x/cliffy@v0.25.5/"
+  }
+}
