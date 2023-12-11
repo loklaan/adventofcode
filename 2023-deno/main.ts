@@ -101,9 +101,9 @@ export async function main() {
               `\nRunning all available puzzles${
                 options.spoilers
                   ? " " +
-                  color.italic(
-                    color.black(color.bgWhite(" in Spoiler-free Mode ")),
-                  )
+                    color.italic(
+                      color.black(color.bgWhite(" in Spoiler-free Mode ")),
+                    )
                   : ""
               }:\n\n${availablePuzzles.map((p) => ` → ${p}`).join("\n")}\n`,
             );
