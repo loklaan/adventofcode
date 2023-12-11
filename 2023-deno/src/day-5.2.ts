@@ -5,14 +5,15 @@ export const solution: Solution = async ({ loadInput, debug, answer }) => {
   const input = await loadInput();
   const [seedsLine, , ...otherLines] = input.split("\n").map((l) => l.trim())
     .filter((x) => x);
-  const seedRanges = Array.from(seedsLine.split(":")[1].matchAll(/\d+/g)).reduce((accum, m, index, all) => {
-    if (index % 2 === 0) {
-      const start = parseInt(m[0]);
-      const range = parseInt(all[index + 1][0]);
-      accum.push([start, range]);
-    }
-    return accum;
-  }, [] as [number, number][]);
+  const seedRanges = Array.from(seedsLine.split(":")[1].matchAll(/\d+/g))
+    .reduce((accum, m, index, all) => {
+      if (index % 2 === 0) {
+        const start = parseInt(m[0]);
+        const range = parseInt(all[index + 1][0]);
+        accum.push([start, range]);
+      }
+      return accum;
+    }, [] as [number, number][]);
   debug(`Seed Ranges: ${seedRanges.length}`);
 
   let mapIndex = 0;
@@ -39,7 +40,13 @@ export const solution: Solution = async ({ loadInput, debug, answer }) => {
   let lowestSeedLocation = 9999999999999;
   for (let i = 0; i < seedRanges.length; i++) {
     const [start, range] = seedRanges[i];
-    debug(`Range ${i + 1}, seeds from      ${start}\n                              to ${start + range - 1}`);
+    debug(
+      `Range ${
+        i + 1
+      }, seeds from      ${start}\n                              to ${
+        start + range - 1
+      }`,
+    );
     for (let j = 0; j < range; j++) {
       const seed = start + j;
       // if (j % 1000000 === 0) {
