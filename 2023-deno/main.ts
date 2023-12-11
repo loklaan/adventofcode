@@ -12,8 +12,8 @@ if (import.meta.main) {
 
 export async function main() {
   const availablePuzzles = Array.from(Deno.readDirSync("src")).filter((entry) =>
-    entry.name.match(/^day-(.*)\.ts$/)
-  ).map((entry) => entry.name.replace(/^day-(.*)\.ts$/, "$1"))
+    entry.name.match(/^day-(\d+\.\d+)\.ts$/)
+  ).map((entry) => entry.name.replace(/^day-(\d+\.\d+)\.ts$/, "$1"))
     .sort();
 
   await new Command()

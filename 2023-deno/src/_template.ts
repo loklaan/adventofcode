@@ -6,5 +6,5 @@ export const solution: Solution = async ({ loadInput, debug, answer }) => {
   const lines = input.split("\n").map((l) => l.trim()).filter((x) => x);
 
   debug("Done.");
-  answer('');
+  answer("");
 };
