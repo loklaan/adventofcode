@@ -216,7 +216,6 @@ ${puzzleFile}`.trim(),
         }`));
       },
       answer: (value) => {
-        performance.mark("solution-end");
         answer = value;
       },
       loadInput: async () => {
@@ -224,6 +223,7 @@ ${puzzleFile}`.trim(),
         return (new TextDecoder("utf-8")).decode(await Deno.readFile(ioFile));
       },
     });
+    performance.mark("solution-end");
 
     const perf = performance.measure(
       "solution-duration",
