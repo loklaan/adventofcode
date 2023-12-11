@@ -1,4 +1,5 @@
 import { Solution } from "../lib/cli.ts";
+import { keys } from "../lib/utils.ts";
 
 export const solution: Solution = async ({ loadInput, debug, answer }) => {
   debug(`Start.`);
@@ -63,8 +64,3 @@ export const solution: Solution = async ({ loadInput, debug, answer }) => {
   debug(`Done.`);
   answer(total.added);
 };
-
-// deno-lint-ignore ban-types
-function keys<T extends {}>(obj: T): (keyof T)[] {
-  return Object.keys(obj) as (keyof T)[];
-}

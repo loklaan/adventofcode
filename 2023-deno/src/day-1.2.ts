@@ -1,4 +1,5 @@
 import { Solution } from "../lib/cli.ts";
+import { reverse } from "../lib/utils.ts";
 
 export const solution: Solution = async ({ loadInput, debug, answer }) => {
   const input = await loadInput();
@@ -7,10 +8,6 @@ export const solution: Solution = async ({ loadInput, debug, answer }) => {
   debug(
     `Total encoded calibrations (numbers and number words): ${encoded.length}`,
   );
-
-  function reverse(str: string) {
-    return str.split("").reverse().join("");
-  }
 
   const digitWordMap = {
     one: "1",

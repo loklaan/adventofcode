@@ -21,6 +21,7 @@ export async function main() {
     .description("Run puzzles for Advent Of Code 2023")
     .env("DEBUG=<enable:boolean>", "Enable debug output.")
     .arguments("[puzzle:string]")
+    .option("-e,--example", "Input the example data, instead of the real data.")
     .option("-s,--spoilers", "Obscure the answer to avoid sharing spoilers.")
     .action(async (options, puzzle) => {
       const logger = setupLogger(options.debug);
@@ -71,7 +72,10 @@ export async function main() {
       |-------------------------------------------------------------------------------
       | Run the chosen puzzle
       */
-      await runPuzzleSolution(logger, confirmedPuzzle, options.spoilers);
+      await runPuzzleSolution(logger, confirmedPuzzle, {
+        spoilers: options.spoilers,
+        example: options.example,
+      });
     })
     .command(
       "all",
@@ -79,6 +83,10 @@ export async function main() {
         .description("Run all puzzles sequentially.")
         .env("DEBUG=<enable:boolean>", "Enable debug output.")
         .arguments("")
+        .option(
+          "-e,--example",
+          "Input the example data, instead of the real data.",
+        )
         .option(
           "-s,--spoilers",
           "Obscure the answer to avoid sharing spoilers.",
@@ -107,7 +115,10 @@ export async function main() {
                 const promise = await runPuzzleSolution(
                   logger,
                   puzzle,
-                  options.spoilers,
+                  {
+                    spoilers: options.spoilers,
+                    example: options.example,
+                  },
                 );
                 console.log("");
                 return promise;
@@ -127,19 +138,47 @@ function isSolutionModule(
 ): mod is SolutionModule {
   return typeof mod === "object" && "solution" in mod && !!mod.solution;
 }
+
+async function fileExists(
+  filePath: string,
+): Promise<boolean> {
+  try {
+    const stat = await Deno.stat(filePath);
+    return stat.isFile;
+  } catch (err: unknown) {
+    return false;
+  }
+}
+
 async function runPuzzleSolution(
   logger: Logger,
   puzzle: string,
-  noSpoilers: boolean = false,
+  {
+    spoilers: noSpoilers = false,
+    example: useExampleInput = false,
+  }: {
+    spoilers?: boolean;
+    example?: boolean;
+  },
 ) {
   const Box = new BoxFormatter();
 
   try {
-    const puzzleName = `Day:  ${puzzle.split(".")[0]}\nPart: ${
-      puzzle.split(".")[1]
-    }`;
+    logger.debug(`Validating input data file`);
+    let ioFile = `./src/io/day-${puzzle.split(".")[0]}${
+      useExampleInput ? ".example" : ""
+    }.txt`;
+    if (!(await fileExists(ioFile))) {
+      throw new Error(
+        `The${
+          useExampleInput ? " example" : ""
+        } input file '${ioFile}' does not exist. Create it, before running again.`,
+      );
+    }
+
     const puzzleFile = `src/day-${puzzle}.ts`;
     const moduleFile = `./${puzzleFile}`;
+    logger.debug(`Validating solution module file`);
     const mod: Partial<SolutionModule> | undefined = await import(moduleFile);
     if (!isSolutionModule(mod)) {
       throw new Error(
@@ -151,11 +190,15 @@ async function runPuzzleSolution(
     const startTime = new Date();
 
     const boxHeading = "RUNNING";
-    console.log(Box.top(boxHeading, `
+    console.log(Box.top(
+      boxHeading,
+      `
 Day:  ${(puzzle.split(".")[0])}
 Part: ${puzzle.split(".")[1]}
-${puzzleFile}`.trim()));
+${puzzleFile}`.trim(),
+    ));
     let answer: string | number = "NO-ANSWER";
+    performance.mark("solution-start");
     await mod.solution({
       debug: (str) => {
         const since = duration.format(+new Date() - +startTime, {
@@ -173,17 +216,20 @@ ${puzzleFile}`.trim()));
         }`));
       },
       answer: (value) => {
+        performance.mark("solution-end");
         answer = value;
       },
       loadInput: async () => {
-        const ioFile = `./src/io/day-${puzzle.split(".")[0]}.txt`;
         logger.debug(`loadInput: ${ioFile}`);
-        const decoder = new TextDecoder("utf-8");
-        const data = await Deno.readFile(ioFile);
-        return decoder.decode(data);
+        return (new TextDecoder("utf-8")).decode(await Deno.readFile(ioFile));
       },
     });
 
+    const perf = performance.measure(
+      "solution-duration",
+      "solution-start",
+      "solution-end",
+    );
     console.log(
       Box.bottom(
         boxHeading,
@@ -191,13 +237,27 @@ ${puzzleFile}`.trim()));
           color.reset(
             color.black(color.bgWhite(` ${noSpoilers ? "*****" : answer} `)),
           )
-        }`,
+        }\nTIME   ▶︎ ${perf.duration}ms`,
       ),
     );
 
     logger.debug(`Solution finished.`);
   } catch (err) {
     console.log("");
-    console.error(err);
+    const header = "ERROR";
+    console.log(Box.top(
+      header,
+      "▼ Message",
+    ));
+    console.log(
+      Box.body(
+        `${
+          color.bold(err.message)
+        }\n\n${(err.stack.split("\n").slice(1).map((l: string) =>
+          "  " + color.dim(l.trim())
+        ).join("\n"))}`,
+      ),
+    );
+    console.log(Box.bottom(header, "▲ Stack"));
   }
 }

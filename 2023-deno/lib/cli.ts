@@ -67,7 +67,9 @@ export class BoxFormatter {
 
   top(heading: string, nestedHeading: string) {
     const nestedHeadings = nestedHeading.split("\n").map((line, i, all) =>
-      (all.length > 1 && i < all.length - 1 ? `${this.altPipe()} ├─• ` : `${this.altPipe()} ╰─• `) + line
+      (all.length > 1 && i < all.length - 1
+        ? `${this.altPipe()} ├─• `
+        : `${this.altPipe()} ╰─• `) + line
     );
     return color.dim(`
 ${color.italic(`╭─┬─ ${heading} ───────────────────────╼`)}
@@ -76,15 +78,19 @@ ${this.altPipe()}`.trim());
   }
 
   body(str: string) {
-    return str.split("\n").map((line) =>
-      `${color.dim(this.altPipe())} ${line}`
-    ).join("\n");
+    return str.split("\n").map((line) => `${color.dim(this.altPipe())} ${line}`)
+      .join("\n");
   }
 
   bottom(heading: string, footer: string) {
+    const nestedFooter = footer.split("\n").map((line, i, all) =>
+      ((all.length === 1 || all.length > 1 && i < all.length - 1)
+        ? `${this.altPipe()} ╭─• `
+        : `${this.altPipe()} ├─• `) + line
+    );
     return `
 ${color.dim(this.altPipe())}
-${color.dim(`${this.altPipe()} ╭─• ${footer}`)}
+${(nestedFooter.map((l) => color.dim(l)).join("\n"))}
 ${color.dim(`╰─┴──${"─".repeat(heading.length)}────────────────────────╼`)}`
       .trim();
   }
