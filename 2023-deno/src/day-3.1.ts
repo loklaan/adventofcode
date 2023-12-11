@@ -23,26 +23,23 @@ export const solution: Solution = async ({ loadInput, debug, answer }) => {
           ? inputS[index]
           : ".";
       const l1 = `${charAt(indexUp - 1)}${
-        Array(numLength + 1).fill(null).map((_, i) => charAt(indexUp + i)).join("")
+        Array(numLength + 1).fill(null).map((_, i) => charAt(indexUp + i)).join(
+          "",
+        )
       }`;
       const l2 = `${charAt(match.index - 1)}${match[0]}${
         charAt(match.index + numLength)
-      }`
+      }`;
       const l3 = `${charAt(indexDown - 1)}${
-        Array(numLength + 1).fill(null).map((_, i) => charAt(indexDown + i)).join("")
+        Array(numLength + 1).fill(null).map((_, i) => charAt(indexDown + i))
+          .join("")
       }`;
       const allLines = l1 + l2 + l3;
-      const block = `${l1}\n${l2}\n${l3}`
       if (allLines.match(partRegex)) {
-        const part = allLines.match(partRegex);
-        // debug(`Part: ${part}`)
-        // debug(`Adding: (${match[0]})\n                ${l1}\n                ${l2}\n                ${l3}`)
         total += parseInt(match[0]);
-      } else {
-        // debug(`Skipping:  ${l1}\n                   ${l2}\n                   ${l3}`)
       }
     }
   }
-  debug('Done.')
+  debug("Done.");
   answer(total);
 };
