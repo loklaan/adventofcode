@@ -12,7 +12,7 @@ if (import.meta.main) {
 
 export async function main() {
   const availablePuzzles = Array.from(Deno.readDirSync("src")).filter((entry) =>
-    entry.name.endsWith(".ts")
+    entry.name.match(/^day-(.*)\.ts$/)
   ).map((entry) => entry.name.replace(/^day-(.*)\.ts$/, "$1"))
     .sort();
 
