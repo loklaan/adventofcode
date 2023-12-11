@@ -24,7 +24,7 @@ export async function main() {
     .option("-e,--example", "Input the example data, instead of the real data.")
     .option("-s,--spoilers", "Obscure the answer to avoid sharing spoilers.")
     .action(async (options, puzzle) => {
-      const logger = setupLogger(options.debug);
+      const logger = setupLogger(!!options.debug);
 
       logger.debug(`Actioning command. Puzzle provided ${puzzle || "none"}`);
 
@@ -73,8 +73,8 @@ export async function main() {
       | Run the chosen puzzle
       */
       await runPuzzleSolution(logger, confirmedPuzzle, {
-        spoilers: options.spoilers,
-        example: options.example,
+        spoilers: !!options.spoilers,
+        example: !!options.example,
       });
     })
     .command(
@@ -93,7 +93,7 @@ export async function main() {
         )
         .action(
           async (options) => {
-            const logger = setupLogger(options.debug);
+            const logger = setupLogger(!!options.debug);
 
             logger.debug(`Actioning 'all' command.`);
 
@@ -101,9 +101,9 @@ export async function main() {
               `\nRunning all available puzzles${
                 options.spoilers
                   ? " " +
-                    color.italic(
-                      color.black(color.bgWhite(" in Spoiler-free Mode ")),
-                    )
+                  color.italic(
+                    color.black(color.bgWhite(" in Spoiler-free Mode ")),
+                  )
                   : ""
               }:\n\n${availablePuzzles.map((p) => ` → ${p}`).join("\n")}\n`,
             );
@@ -116,8 +116,8 @@ export async function main() {
                   logger,
                   puzzle,
                   {
-                    spoilers: options.spoilers,
-                    example: options.example,
+                    spoilers: !!options.spoilers,
+                    example: !!options.example,
                   },
                 );
                 console.log("");
