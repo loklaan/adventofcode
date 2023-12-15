@@ -98,7 +98,7 @@ ${color.dim(`╰─┴──${"─".repeat(heading.length)}───────
 
 export type SolutionActions = {
   loadInput: () => Promise<string>;
-  debug: (input: string | number) => void;
+  debug: (input: string | number | Record<string, unknown> | unknown[]) => void;
   answer: (value: string | number) => void;
 };
 

@@ -201,6 +201,9 @@ ${puzzleFile}`.trim(),
     performance.mark("solution-start");
     await mod.solution({
       debug: (str) => {
+        const _str = (typeof str === "object" || Array.isArray(str))
+          ? JSON.stringify(str)
+          : str.toString();
         const since = duration.format(+new Date() - +startTime, {
           ignoreZero: true,
           style: "narrow",
@@ -210,7 +213,7 @@ ${puzzleFile}`.trim(),
             `[DEBUG]`,
           )
         } ${
-          str.toString().split("\n").map((line, i) =>
+          _str.toString().split("\n").map((line, i) =>
             i === 0 ? `${line}${since ? color.dim(` +${since}`) : ""}` : line
           ).join("\n")
         }`));
