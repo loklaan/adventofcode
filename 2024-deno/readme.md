@@ -17,9 +17,9 @@ $ ./main.ts --help
 
   Options:
 
-    -h, --help     - Show this help.
-    -V, --version  - Show the version number for this program.
-    -s, --spoilers - Show the version number for this program.
+    -h, --help         - Show this help.
+    -V, --version      - Show the version number for this program.
+    -s, --spoiler-free - Obscure the answer to avoid sharing spoilers.
 
   Commands:
 

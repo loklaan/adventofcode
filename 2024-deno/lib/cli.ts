@@ -98,7 +98,10 @@ ${Color.dim(`╰─┴──${"─".repeat(heading.length)}───────
 
 export type SolutionActions = {
   loadInput: () => Promise<string>;
-  debug: (input: string | number | Record<string, unknown> | unknown[]) => void;
+  debug: (
+    input: string | number | Record<string, unknown> | unknown[],
+    mode?: "spoiler-free",
+  ) => void;
   answer: (value: string | number) => void;
 };
 
